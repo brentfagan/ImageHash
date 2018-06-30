@@ -9,24 +9,23 @@ import javax.swing.*;
 import java.awt.image.*;
 
 public class ImagePreProcess {
-    public static void countBits(String filePath){
-        int newWidth = 8;
-        int newHeight = 9;
-        BufferedImage colorImg = null;
+
+    public static Image readImage(String filePath){
+        BufferedImage img = null;
         try {
-            colorImg = ImageIO.read(new File(filePath));
-            ImageFilter filter = new GrayFilter(true, 50);
-            ImageProducer producer = new FilteredImageSource(colorImg.getSource(), filter);
-            Image greyImage = Toolkit.getDefaultToolkit().createImage(producer);
-            Image scaleImage = greyImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
-            int height;
-            height = colorImg.getHeight();
-            int width;
-            width = colorImg.getWidth();
-            System.out.println("Height : " + height);
-            System.out.println("Width : " + width);
-        } catch (IOException e) {
-            e.printStackTrace();
+             img = ImageIO.read(new File(filePath));
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
         }
+        return img;
+    }
+
+    public static Image returnGreyScale(Image colorImg, int newWidth, int newHeight){
+        ImageFilter filter = new GrayFilter(true, 50);
+        ImageProducer producer = new FilteredImageSource(colorImg.getSource(), filter);
+        Image greyImage = Toolkit.getDefaultToolkit().createImage(producer);
+        Image scaleImage;
+        scaleImage = greyImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
+        return scaleImage;
     }
 }
