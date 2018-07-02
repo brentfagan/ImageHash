@@ -10,7 +10,7 @@ import java.awt.image.*;
 
 public class ImagePreProcess {
 
-    public static Image readImage(String filePath){
+    public static BufferedImage readImage(String filePath){
         BufferedImage img = null;
         try {
              img = ImageIO.read(new File(filePath));
@@ -20,12 +20,30 @@ public class ImagePreProcess {
         return img;
     }
 
-    public static Image returnGreyScale(Image colorImg, int newWidth, int newHeight){
-        ImageFilter filter = new GrayFilter(true, 50);
-        ImageProducer producer = new FilteredImageSource(colorImg.getSource(), filter);
-        Image greyImage = Toolkit.getDefaultToolkit().createImage(producer);
-        Image scaleImage;
-        scaleImage = greyImage.getScaledInstance(newWidth, newHeight, Image.SCALE_DEFAULT);
+    public static BufferedImage returnGrayScaled(BufferedImage colorImg, int newWidth, int newHeight){
+        for (int i=0; i<newWidth; i++){
+            for (int j=0; j<newHeight; j++){
+                int rgb = colorImg.getRGB(i,j);
+                int r = (rgb >> 16) & 0xFF;
+                int g = (rgb >> 8) & 0XFF;
+                int b = (rgb & 0xFF);
+
+                double grayDouble = 0.2126*r + 0.7152*g + 0.0722*b;
+                int grayLevel = (int) grayDouble;
+                int gray = (grayLevel << 16) | (grayLevel << 8) | grayLevel;
+                colorImg.setRGB(i, j, gray);
+            }
+        }
+        BufferedImage scaleImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_BYTE_GRAY);
+        scaleImage.createGraphics().drawImage(colorImg, 0, 0, newWidth, newHeight, null);
         return scaleImage;
+    }
+
+    public static void printPixels(BufferedImage greyScale){
+        int width = greyScale.getWidth();
+        int height = greyScale.getHeight();
+        for (int i=0; i<width; i++){
+            for (int j=0; j<height; j++) System.out.println(greyScale.getRGB(i,j));
+        }
     }
 }
