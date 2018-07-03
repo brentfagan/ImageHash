@@ -21,6 +21,7 @@ public class ImagePreProcess {
     }
 
     public static BufferedImage returnGrayScaled(BufferedImage colorImg, int newWidth, int newHeight){
+//      see https://stackoverflow.com/questions/9131678/convert-a-rgb-image-to-grayscale-image-reducing-the-memory-in-java
         for (int i=0; i<newWidth; i++){
             for (int j=0; j<newHeight; j++){
                 int rgb = colorImg.getRGB(i,j);
@@ -39,11 +40,34 @@ public class ImagePreProcess {
         return scaleImage;
     }
 
-    public static void printPixels(BufferedImage greyScale){
-        int width = greyScale.getWidth();
-        int height = greyScale.getHeight();
-        for (int i=0; i<width; i++){
-            for (int j=0; j<height; j++) System.out.println(greyScale.getRGB(i,j));
+    public static int[][] pixelDifference(BufferedImage grayScale){
+        int width = grayScale.getWidth();
+        int height = grayScale.getHeight();
+        int[][] pixelDiff = new int[width][height];
+        for (int j=0; j<height; j++){
+            for (int i=0; i<width-1; i++) {
+                pixelDiff[i][j] = (grayScale.getRGB(i, j) < grayScale.getRGB(i+1, j)) ? 1 : 0;
+            }
         }
+        return pixelDiff;
+    }
+
+    public static long diffHash(BufferedImage grayScale){
+        int width = grayScale.getWidth();
+        int height = grayScale.getHeight();
+        long dHash = 0;
+        for (int j=0; j<height; j++){
+            for (int i=0; i<width-1; i++) {
+                int bit = (grayScale.getRGB(i, j) < grayScale.getRGB(i+1, j)) ? 1 : 0;
+                dHash = dHash << 1 | bit;
+            }
+        }
+        return dHash;
+    }
+
+    public static long similarity(long dHash1, long dHash2){
+        long compare = dHash1 ^ dHash2;
+        int hammingWt = Long.bitCount(compare);
+        return hammingWt;
     }
 }
