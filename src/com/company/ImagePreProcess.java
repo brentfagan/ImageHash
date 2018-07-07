@@ -10,10 +10,10 @@ import java.awt.image.*;
 
 public class ImagePreProcess {
 
-    public static BufferedImage readImage(String filePath){
+    public static BufferedImage readImage(File filePath){
         BufferedImage img = null;
         try {
-             img = ImageIO.read(new File(filePath));
+             img = ImageIO.read(filePath);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
